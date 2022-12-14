@@ -1,0 +1,55 @@
+version: "3"
+services:
+  postgres:
+    image: postgres:14.6
+    hostname: postgres
+    container_name: postgres
+    environment:
+      - POSTGRES_PASSWORD=password
+    ports:
+      - 6432:5432
+    restart: always
+    volumes:
+      - './postgres-data:/var/lib/postgresql/data'
+    networks:
+      - timescale
+  timescaledb:
+    image: timescale/timescaledb:latest-pg14
+    hostname: timescaledb
+    container_name: timescaledb
+    environment:
+      - POSTGRES_PASSWORD=password
+    ports:
+      - 5432:5432
+    restart: always
+    volumes:
+      - './data:/var/lib/postgresql/data'
+    networks:
+      - timescale
+  # pgbouncer:
+  #   image: 'bitnami/pgbouncer:latest'
+  #   hostname: pgbouncer
+  #   restart: always
+  #   container_name: pgbouncer
+  #   ports:
+  #     - '5432:6432'
+  #   depends_on:
+  #     - timescaledb
+  #   environment:
+  #     - POSTGRESQL_USERNAME=postgres
+  #     - PGBOUNCER_POOL_MODE=transaction
+  #     - POSTGRESQL_PASSWORD=password
+  #     - POSTGRESQL_HOST=timescaledb
+  #     - POSTGRESQL_PORT=5432
+  #     - PGBOUNCER_BIND_ADDRESS=localhost
+  #     - PGBOUNCER_IGNORE_STARTUP_PARAMETERS=extra_float_digits
+  #     - PGBOUNCER_MAX_DB_CONNECTIONS=90
+  #     - PGBOUNCER_DATABASE=dev_portfolio_activity
+  #     - PGBOUNCER_DEFAULT_POOL_SIZE=500
+  #     - PGBOUNCER_MAX_CLIENT_CONN=500
+  #   # volumes:
+  #     # - /Users/141216/project/docker-compose/timscaledb/conf/:/bitnami/pgbouncer/conf/
+  #   networks:
+  #     - timescale
+networks:
+  timescale:
