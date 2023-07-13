@@ -4,11 +4,11 @@ services:
     image: mongo:5
     hostname: mongo5
     container_name: mongo5
-    command: ["--replSet", "rs0", "--bind_ip_all", "--port", "27017"]
+    command: ["--replSet", "rs0", "--bind_ip_all", "--port", "27018"]
     ports:
-      - 27018:27017
+      - 27018:27018
     healthcheck:
-      test: test $$(echo "if (rs.status().ok === 1) { 1 } else { rs.initiate({_id:'rs0',members:[{_id:0,host:'localhost:27017'}]}).ok }" | mongo --port 27017 --quiet | tail -c 2) -eq 1
+      test: test $$(echo "if (rs.status().ok === 1) { 1 } else { rs.initiate({_id:'rs0',members:[{_id:0,host:'localhost:27018'}]}).ok }" | mongo --port 27018 --quiet | tail -c 2) -eq 1
       interval: 10s
       start_period: 10s
     restart: always
