@@ -1,0 +1,18 @@
+version: "3"
+
+services:
+  activemq:
+    image: apache/activemq-artemis:latest
+    hostname: activemq
+    container_name: activemq
+    ports:
+      - "61616:61616"
+      - "8161:8161"
+      - "55672:55672"
+    environment:
+      ARTEMIS_USER: "admin"
+      ARTEMIS_PASSWORD: "admin"
+      ARTEMIS_EXTRA_ARGS: "--nio --host 0.0.0.0 --http-host 0.0.0.0 --relax-jolokia"
+    restart: always
+    volumes:
+      - ./artemis-instance:/var/lib/artemis-instance 

@@ -1,0 +1,42 @@
+version: "3"
+services:
+  athens:
+    image: gomods/athens:canary
+    hostname: athens
+    container_name: athens
+    ports:
+      - "3333:3000"
+    environment:
+      # disk
+      # - ATHENS_DISK_STORAGE_ROOT=/var/run/athens
+      # - ATHENS_STORAGE_TYPE=disk
+      # mongo
+      - ATHENS_STORAGE_TYPE=mongo
+      - ATHENS_MONGO_STORAGE_URL=mongodb://mongo:27017/?tls=false&tlsInsecure=true
+      - ATHENS_MONGO_DEFAULT_DATABASE=athens
+      - ATHENS_MONGO_DEFAULT_COLLECTION=modules
+      # - ATHENS_MONGO_INSECURE=true
+
+      - GOPRIVATE=git.taservs.net/*
+      - ATHENS_GONOSUM_PATTERNS=git.taservs.net/*
+    restart: always
+    volumes:
+      - './data/modules:/var/run/athens'
+      - './config/.gitconfig:/root/.gitconfig'
+      - '~/.ssh:/root/.ssh'
+    depends_on:
+      - mongo
+  mongo:
+    image: mongo:5
+    hostname: mongo
+    container_name: mongo
+    command: ["--replSet", "rs0", "--bind_ip_all", "--port", "27017"]
+    ports:
+      - "27017:27017"
+    healthcheck:
+      test: echo "try { rs.status(); 1 } catch { rs.initiate({_id:'rs0',members:[{_id:0,host:'localhost:27017'}]}).ok }" | mongosh --port 27017 --quiet | grep -q "> 1"
+      interval: 10s
+      start_period: 10s
+    restart: always
+    volumes:
+      - './data/mongo:/data/db'
